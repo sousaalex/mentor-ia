@@ -87,8 +87,9 @@ function Quiz() {
   const [carregando, setCarregando] = useState(false);
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
   const [ufcdName, setUfcdName] = useState(null);
-  const [correcao, setCorrecao] = useState(null)
+  const [pergunta, setPergunta] = useState(null)
   const [dia, setDia] = useState(null);
+
 
 
   useEffect(() => {
@@ -98,6 +99,10 @@ function Quiz() {
   }, []); 
 
 
+  useEffect(() => {
+    const storedUfcdquestion = localStorage.getItem('chatHistory');
+    setPergunta(storedUfcdquestion);
+  }, []);
 
   useEffect(() => {
     const userEmailFromLocalStorage = localStorage.getItem('mailUser');
@@ -140,7 +145,7 @@ function Quiz() {
       setResponse(DataAPI);
       console.log(DataAPI);
     } */
-    let promptContent = `De acordo com esta Aula "${DataAPI}", gere um quiz com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
+    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${pergunta}" se ela tiver conteudos relevantes de acorodo a aula. Gere um quiz com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
   
     setLoading(true);
   
@@ -275,6 +280,7 @@ function Quiz() {
     const storedUfcdName = localStorage.getItem('UFCD clicada');
     setUfcdName(storedUfcdName);
   }, []);
+
 
 /*  useEffect(() => {
   // Recuperar dados do localStorage se existirem
