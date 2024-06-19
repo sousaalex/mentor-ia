@@ -414,7 +414,7 @@ function Curso({ qualificacao }) {
                   <div className="w-full h-full fixed top-0 left-0 bg-white bg-opacity-50 backdrop-blur-sm flex justify-center items-center">
                     <div className="flex justify-center items-center text-center space-x-2">
                       <Spin size="default" />
-                      <p>Por favor aguarde...</p>
+                      <p>Por favor aguarde, esta acção poderá tomar alguns minutos...</p>
                     </div>
                   </div>
                 ) : (
@@ -425,12 +425,12 @@ function Curso({ qualificacao }) {
                           <p
                             className="font-bold text-base p-3 text-gray-800 hover:underline hover:text-cyan-400 cursor-pointer "
                             onClick={() => handleUFCDClick(`${course['UFCD']} _ ${course.id}`)}                          >
-                            UFCD: {course['UFCD']} {/* - {course.id} */}
+                            módulo: {course['UFCD']} {/* - {course.id} */}
                           </p>
                         </div>
                       ))
                     ) : (
-                      <p>Nenhuma UFCD encontrada</p>
+                      <p>Nenhum módulo encontrado</p>
                     )}
                   </div>
                 )}

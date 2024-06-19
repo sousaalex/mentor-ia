@@ -653,7 +653,3 @@ function Ufcd() {
   )
 }
 export default withAuth(Ufcd)
-
-
-
-

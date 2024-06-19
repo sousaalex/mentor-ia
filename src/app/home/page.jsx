@@ -334,7 +334,7 @@ export default function Component() {
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 O que os alunos dizem sobre a MentorIA
               </h2>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed ">
                 Consulte o que os alunos dizem sobre a experiência de aprendizem com a MentorIA.
               </p>
             </div>
@@ -410,10 +410,10 @@ export default function Component() {
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Melhore dinâmicas de aprendizagem com a MentorIA
               </h2>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed ">
                 Verifica se já tens registo no MentorIA.
               </p>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed ">
                 Se já estas registado na nossa plataforma clique <a onClick={handleClick} className="hover:text-blue-400 underline font-extrabold">aqui</a> para conectares.
               </p>
             </div>
@@ -495,21 +495,21 @@ export default function Component() {
                     {userDataAPI && userDataAPI.data.length > 0 ? (
                       <div className="text-gray-700 text-lg sm:text-base">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <p className="mt-2">
+                          <div className="mt-2">
                             <strong className="mr-2">Nome:</strong> {userDataAPI.data[0].usuario.nome}
-                          </p>
-                          <p className="mt-2">
+                          </div>
+                          <div className="mt-2">
                             <strong className="mr-2">Email:</strong> {userDataAPI.data[0].usuario.email}
-                          </p>
-                          <p className="mt-2">
+                          </div>
+                          <div className="mt-2">
                             <strong className="mr-2">Curso:</strong> {userDataAPI.data[0].usuario.curso}
-                          </p>
-                          <p className="mt-2">
+                          </div>
+                          <div className="mt-2">
                             <strong className="mr-2">Turma:</strong> {userDataAPI.data[0].usuario.turma}
-                          </p>
-                          <p className="mt-2 col-span-1 sm:col-span-2">
+                          </div>
+                          <div className="mt-2 col-span-1 sm:col-span-2">
                             <strong className="mr-2">Instituição:</strong> {userDataAPI.data[0].eventos[0].Instituição}
-                          </p>
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -531,18 +531,13 @@ export default function Component() {
                     Confirmar
                   </AlertDialogAction>
                 </AlertDialogFooter>
-
               </AlertDialogContent>
             </AlertDialog>
-
-
           </>
-
-
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2024 MentorIA. Todos os direitos reservados.</p>
+        <p className="text-xs text-gray-500">&copy; 2024 MentorIA. Todos os direitos reservados.</p>
       </footer>
     </div>
   )
