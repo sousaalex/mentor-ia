@@ -378,12 +378,12 @@ function Curso({ qualificacao }) {
               <div className="relative w-full max-w-2xl">
                 <div className="absolute inset-y-0 left-3 flex items-center">
                   <span className="h-5 w-5  text-gray-500 font-bold">
-                    UFCD:
+                  Módulo:
                   </span>
                 </div>
                 <Input
                   type="text"
-                  placeholder="Nome da UFCD"
+                  placeholder="nome da módulo"
                   className="w-full sm:mt-0 mt-2 rounded-full bg-gray-100 px-20  text-slate-600"
                   onChange={handleSearch}
                 />
