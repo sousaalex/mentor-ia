@@ -414,7 +414,7 @@ function Curso({ qualificacao }) {
                   <div className="w-full h-full fixed top-0 left-0 bg-white bg-opacity-50 backdrop-blur-sm flex justify-center items-center">
                     <div className="flex justify-center items-center text-center space-x-2">
                       <Spin size="default" />
-                      <p>Por favor aguarde, esta acção poderá tomar alguns minutos...</p>
+                      <p>Esta acção poderá tomar alguns minutos...</p>
                     </div>
                   </div>
                 ) : (
