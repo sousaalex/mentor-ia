@@ -42,8 +42,7 @@ const keepAlive = async () => {
       },
       body: JSON.stringify({ pergunta: 'quem é vc?' }),
     });
-/*     console.log('Keep-alive request sent.');
- */  } catch (error) {
+  } catch (error) {
     console.error('Erro ao enviar keep-alive request:', error);
   }
 };
@@ -69,7 +68,7 @@ function Curso({ qualificacao }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [courseName, setCourseName] = useState(null);
   const [userName, setUserName] = useState(null)
-  const [userSurname, setUserSurname] = useState (null)
+  const [userSurname, setUserSurname] = useState(null)
   const [userMail, setUserMail] = useState(null)
 
   useEffect(() => {
@@ -81,7 +80,7 @@ function Curso({ qualificacao }) {
     if (userEmailFromLocalStorage) {
       const database = firebase.database();
       const dataRef = database.ref('users');
-  
+
       // Consultar o banco de dados para encontrar chaves onde o valor do campo "email" é igual ao email do usuário
       dataRef.orderByChild('email').equalTo(userEmailFromLocalStorage).once('value')
         .then(async (snapshot) => {
@@ -92,26 +91,18 @@ function Curso({ qualificacao }) {
               const user = childSnapshot.val();
               const nome = user.nome;
               const email = user.email
-               // supondo que 'surname' é a chave para o apelido
-      
               // Definir o nome no estado (ou use conforme necessário)
               setUserName(nome);
               setUserMail(email)
-
-      
-              // Você pode fazer algo adicional com o apelido
-/*               console.log(`Nome: ${nome}, Apelido: ${apelido}, email: ${email}`);
- */            });
+            });
           } else {
-/*             console.log('Nenhum dado encontrado com o email do usuário.');
- */          }
+          }
         })
         .catch((error) => {
           console.error('Erro ao recuperar dados do Firebase:', error.message);
         });
     } else {
-/*       console.log('Email do usuário não encontrado no localStorage.');
- */    }
+    }
   }, []);
 
 
@@ -176,29 +167,28 @@ function Curso({ qualificacao }) {
   // Filtrar os dados com base no valor do filtro
   const normalizeString = str => {
     return str
-        .toLowerCase() // Converte para minúsculas
-        .normalize('NFD') // Decompõe caracteres acentuados
-        .replace(/[\u0300-\u036f]/g, '') // Remove os sinais diacríticos
-        .replace(/[^a-z0-9\s]/g, ''); // Remove caracteres especiais, mantendo letras, números e espaços
-};
+      .toLowerCase() // Converte para minúsculas
+      .normalize('NFD') // Decompõe caracteres acentuados
+      .replace(/[\u0300-\u036f]/g, '') // Remove os sinais diacríticos
+      .replace(/[^a-z0-9\s]/g, ''); // Remove caracteres especiais, mantendo letras, números e espaços
+  };
 
-const dadosFiltrados = data.filter(item => {
+  const dadosFiltrados = data.filter(item => {
     // Verifica se o item e a propriedade 'Qualificação' não são nulos ou indefinidos
     if (item && item.Qualificação) {
-        // Normaliza a propriedade 'Qualificação' e o 'filtro'
-        const qualificacaoNormalizada = normalizeString(item.Qualificação);
-        const filtroNormalizado = normalizeString(filtro);
-        
-        // Verifica se 'qualificacaoNormalizada' inclui 'filtroNormalizado'
-        return qualificacaoNormalizada.includes(filtroNormalizado);
+      // Normaliza a propriedade 'Qualificação' e o 'filtro'
+      const qualificacaoNormalizada = normalizeString(item.Qualificação);
+      const filtroNormalizado = normalizeString(filtro);
+
+      // Verifica se 'qualificacaoNormalizada' inclui 'filtroNormalizado'
+      return qualificacaoNormalizada.includes(filtroNormalizado);
     }
     // Se o item ou a propriedade 'Qualificação' for nulo ou indefinido, não inclui no array filtrado
     return false;
-});
+  });
 
 
-/*   const dadosFiltrados = data.filter(item => item.Qualificação.toLowerCase().includes(filtro.toLowerCase()));
- */  //funçao para  enviar o nome do curso presente no  card selecionado para a API de busca no banco de dados 
+  //funçao para  enviar o nome do curso presente no  card selecionado para a API de busca no banco de dados 
 
   const handleCardClick = async (courseName) => {
     setModalOpen(true);
@@ -209,13 +199,11 @@ const dadosFiltrados = data.filter(item => {
         throw new Error(`Erro na requisição: ${response.status}`);
       }
       const data = response.data;
-      // Armazenando o nome do curso no localStorage
       localStorage.setItem('courseName', courseName);
 
-      // Armazenando os dados do curso no localStorage
       localStorage.setItem('courseData', JSON.stringify(data));
 
-      setLoading(false); // Mova esta linha para cá
+      setLoading(false);
     } catch (error) {
       if (error.response && error.response.status) {
         console.error(`Erro HTTP ${error.response.status}:`, error.response.data);
@@ -238,16 +226,11 @@ const dadosFiltrados = data.filter(item => {
   };
   const filteredCourses = courseData.filter(course =>
     course['UFCD'].toLowerCase().includes(searchTerm.toLowerCase())
-    // Adicione outras condições de filtro conforme necessário
   );
 
   // Função para lidar com o clique em UFCD
   const handleUFCDClick = (selectedData) => {
     const [ufcd, id] = selectedData.split(' _ ');
-
-     /*  console.log("UFCD clicada:", ufcd);
-  console.log("id", id); */
-
     localStorage.setItem('UFCD clicada', ufcd);
     localStorage.setItem('id', id);
 
@@ -276,8 +259,7 @@ const dadosFiltrados = data.filter(item => {
       const data = await respostaAPI.json();
       if (data && data.resposta) {
         localStorage.setItem(storageKey, JSON.stringify(data.resposta));
-/*         console.log('Resposta da API:', data.resposta);
- */      } else {
+      } else {
         console.error('Resposta da API mal formada:', data);
       }
     } catch (error) {
@@ -298,53 +280,49 @@ const dadosFiltrados = data.filter(item => {
         console.error("Erro ao fazer logout:", error);
       });
   }
-  
+
 
   return (
     <div className="bg-slate-100 text-white min-h-screen overflow-y-hidden">
       <div className="p-4 flex flex-col justify-center items-center">
         <div className="w-full sm:w-auto  border-gray-200 flex items-center">
-        <div className="relative w-full max-w-md">
-      <div className="absolute inset-y-0 left-3 flex items-center">
-        <span className="h-5 w-5  text-gray-500 font-bold">
-          Curso:
-          </span>
-      </div>
-      <Input
-        type="text"
-        placeholder="Nome do Curso"
-        className="w-full rounded-full bg-gray-100 px-20 sm:mt-0 mt-2 text-slate-600"
-        onChange={handleFiltroChange}
-      />
-      <div className="absolute inset-y-0 right-3 flex items-center">
-      <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="text-slate-600 border-none p-0">
-            <MdOutlineSettings className="h-5 w-5 sm:mt-0 mt-2 text-gray-500 border-none hover:text-cyan-400 animate-spin" />
-            {/*<ChevronDownIcon className="ml-2 h-4 w-4" />*/} 
-           </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-          <DropdownMenuItem >
-              <CiUser className="mr-2 h-4 w-4 text-slate-800 " />
-              Nome: {userName} {userSurname}
-            </DropdownMenuItem>
-            <DropdownMenuItem >
-              <TfiEmail className="mr-2 h-4 w-4 text-slate-800 " />
-              Email: {userMail}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout} >
-              <AiOutlineLogout className="mr-2 h-4 w-4 text-slate-800 "  />
-              Sair
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
-          {/* <input className="border border-gray-300 rounded-md p-3 text-gray-600   w-full" placeholder="Qual curso desejas..." type="text" onChange={handleFiltroChange} />
-          <IoIosSearch className="h-6 w-6 mx-2 text-slate-800 " /> */}
-          
+          <div className="relative w-full max-w-md">
+            <div className="absolute inset-y-0 left-3 flex items-center">
+              <span className="h-5 w-5  text-gray-500 font-bold">
+                Curso:
+              </span>
+            </div>
+            <Input
+              type="text"
+              placeholder="Nome do Curso"
+              className="w-full rounded-full bg-gray-100 px-20 sm:mt-0 mt-2 text-slate-600"
+              onChange={handleFiltroChange}
+            />
+            <div className="absolute inset-y-0 right-3 flex items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="text-slate-600 border-none p-0">
+                    <MdOutlineSettings className="h-5 w-5 sm:mt-0 mt-2 text-gray-500 border-none hover:text-cyan-400 animate-spin" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem >
+                    <CiUser className="mr-2 h-4 w-4 text-slate-800 " />
+                    Nome: {userName} {userSurname}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem >
+                    <TfiEmail className="mr-2 h-4 w-4 text-slate-800 " />
+                    Email: {userMail}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout} >
+                    <AiOutlineLogout className="mr-2 h-4 w-4 text-slate-800 " />
+                    Sair
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
         </div>
         <section className="py-8 md:py-16 lg:py-20 bg-gray-100 ">
           <div className="container mx-auto max-w-6xl px-4 md:px-6">
@@ -354,8 +332,8 @@ const dadosFiltrados = data.filter(item => {
               {loading || loadingMore ? (
                 <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-50 flex justify-center items-center">
                   <div className="flex justify-center items-center text-center space-x-2">
-                    <Spin size="large"/>
-                   
+                    <Spin size="large" />
+
                   </div>
                 </div>
               ) : (
@@ -367,9 +345,7 @@ const dadosFiltrados = data.filter(item => {
                   >
 
                     <div className='flex '>
-                      {/* bolinha ciano */}
                       <div className="h-1 w-1 p-2 animate-bounce mt-2 rounded-full bg-cyan-400 mr-2"></div>
-
                       <div className="">
                         <div className="mb-2 flex items-center gap-2">
                           <h3 className="text-lg font-medium text-gray-900 group-hover:text-cyan-400  hover:underline">
@@ -379,13 +355,12 @@ const dadosFiltrados = data.filter(item => {
                         <p className="text-sm text-gray-600">{item["Área de Formação"]}</p>
                       </div>
                     </div>
-                   </div>
+                  </div>
                 ))
               )}
             </div>
           </div>
         </section>
-        {/* Botão "Ver mais" */}
         {!loading && !loadingMore && startIndex + 4 < dadosFiltrados.length && (
           <div className="flex justify-center">
             <button onClick={handleShowMore} className=" bg-slate-200 mt-4  hover:bg-gray-300 text-slate-700 font-bold py-2 px-4 rounded transition-colors">
@@ -398,45 +373,40 @@ const dadosFiltrados = data.filter(item => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              
-              <DialogTitle className='text-md text-gray-600 p-2'>Selecione um módulo relativamente ao curso {courseName || <Spin size="small"/>}</DialogTitle>
+
+              <DialogTitle className='text-md text-gray-600 p-2'>Selecione um módulo relativamente ao curso {courseName || <Spin size="small" />}</DialogTitle>
               <div className="relative w-full max-w-2xl">
-      <div className="absolute inset-y-0 left-3 flex items-center">
-        <span className="h-5 w-5  text-gray-500 font-bold">
-          UFCD:
-          </span>
-      </div>
-      <Input
-        type="text"
-        placeholder="Nome da UFCD"
-        className="w-full sm:mt-0 mt-2 rounded-full bg-gray-100 px-20  text-slate-600"
-        onChange={handleSearch}
-      />
-      <div className="absolute inset-y-0 right-3 flex items-center">
-      <DropdownMenu>
-         {/*  <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="text-slate-600 border-none p-0">
-            <MdOutlineSettings className="h-5 w-5 text-gray-500 border-none hover:text-cyan-400 animate-spin" />
-           </Button>
-          </DropdownMenuTrigger> */}
-          <DropdownMenuContent align="end">
-          <DropdownMenuItem >
-              <CiUser className="mr-2 h-4 w-4" />
-              Nome: {userName} {userSurname}
-            </DropdownMenuItem>
-            <DropdownMenuItem >
-              <TfiEmail className="mr-2 h-4 w-4" />
-              Email: {userMail}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout} >
-              <AiOutlineLogout className="mr-2 h-4 w-4"  />
-              Sair
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+                <div className="absolute inset-y-0 left-3 flex items-center">
+                  <span className="h-5 w-5  text-gray-500 font-bold">
+                    UFCD:
+                  </span>
+                </div>
+                <Input
+                  type="text"
+                  placeholder="Nome da UFCD"
+                  className="w-full sm:mt-0 mt-2 rounded-full bg-gray-100 px-20  text-slate-600"
+                  onChange={handleSearch}
+                />
+                <div className="absolute inset-y-0 right-3 flex items-center">
+                  <DropdownMenu>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem >
+                        <CiUser className="mr-2 h-4 w-4" />
+                        Nome: {userName} {userSurname}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem >
+                        <TfiEmail className="mr-2 h-4 w-4" />
+                        Email: {userMail}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleLogout} >
+                        <AiOutlineLogout className="mr-2 h-4 w-4" />
+                        Sair
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
             </DialogHeader>
             <ScrollArea className="h-[400px] w-full rounded-md border">
               <div className="p-4">
@@ -455,8 +425,8 @@ const dadosFiltrados = data.filter(item => {
                           <p
                             className="font-bold text-base p-3 text-gray-800 hover:underline hover:text-cyan-400 cursor-pointer "
                             onClick={() => handleUFCDClick(`${course['UFCD']} _ ${course.id}`)}                          >
-                              UFCD: {course['UFCD']} {/* - {course.id} */}
-                           </p>
+                            UFCD: {course['UFCD']} {/* - {course.id} */}
+                          </p>
                         </div>
                       ))
                     ) : (
