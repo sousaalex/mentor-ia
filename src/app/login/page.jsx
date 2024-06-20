@@ -105,7 +105,7 @@ export default function LoginPage() {
   const handleEnter = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      campos();
+      camposemailesenha()
       return;
     }
     setError(null);
@@ -125,8 +125,8 @@ export default function LoginPage() {
         });
 
         if (!emailExists) {
-          erroslogin();
           setError("Usuário não encontrado. Verifique o e-mail e tente novamente.");
+          erroslogin();
           setIsLoading(false);
           return;
         }
@@ -149,7 +149,7 @@ export default function LoginPage() {
           setError("Senha incorreta. Tente novamente.");
           warning();
         } else {
-          errosslogin()
+          erroslogin();
           console.error('Erro ao fazer login:', error);
           setError(error.message);
         }
