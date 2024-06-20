@@ -299,7 +299,7 @@ function Ufcd() {
         dbRef.push(newMessage);
 
         setLastResponse(data.resposta);
-      } else {
+    } else {
         console.error('Resposta da API mal formada:', data);
       }
     } catch (error) {
@@ -328,7 +328,8 @@ function Ufcd() {
   // Função sendMessage para envio de mensagem pelo usuário
   const sendMessage = async () => {
     if (!userMessageInput.trim()) return; // Evita envio de mensagens vazias
-
+    let Prompt = `De acordo a esta Aula "${lastResponse}" exclareça de uma forma ampla esta duvida"${userMessageInput}"`;
+    console.log(Prompt);
     setIsLoading(true);
     try {
 
@@ -347,7 +348,7 @@ function Ufcd() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pergunta: userMessageInput,
+          pergunta: Prompt,
         }),
       });
 
