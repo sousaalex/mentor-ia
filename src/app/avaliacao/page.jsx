@@ -99,10 +99,10 @@ function Quiz() {
   }, []);
 
 
-  useEffect(() => {
+ /*  useEffect(() => {
     const storedUfcdquestion = localStorage.getItem('chatHistory');
     setPergunta(storedUfcdquestion);
-  }, []);
+  }, []); */
 
   useEffect(() => {
     const userEmailFromLocalStorage = localStorage.getItem('mailUser');
@@ -140,8 +140,9 @@ function Quiz() {
 
   const fetchQuestionAndOptionsFromOpenAI = async () => {
     let DataAPI = localStorage.getItem("RespostaAPI");
-    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${pergunta}" se ela tiver conteudos relevantes de acorodo a aula. Gere um quiz com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
+    const storedUfcdquestion = localStorage.getItem('chatHistory');
 
+    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${storedUfcdquestion}" se ela tiver conteudos relevantes de acorodo a aula. Gere um quiz na com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
     setLoading(true);
 
     try {
