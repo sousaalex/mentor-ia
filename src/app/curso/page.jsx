@@ -17,7 +17,7 @@ import { AiOutlineLogout } from "react-icons/ai";
 import { TfiEmail } from "react-icons/tfi";
 import { MdOutlineSettings } from "react-icons/md";
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { DialogTrigger, DialogTitle, DialogHeader, DialogFooter, DialogContent, Dialog } from "@/components/ui/dialog"
+import { DialogTrigger, DialogTitle, DialogHeader, DialogFooter, DialogContent, Dialog } from "@/components/ui/dialog-copy"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 // Inicialização do Firebase
 try {

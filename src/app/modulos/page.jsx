@@ -329,7 +329,6 @@ function Ufcd() {
   const sendMessage = async () => {
     if (!userMessageInput.trim()) return; // Evita envio de mensagens vazias
     let Prompt = `De acordo a esta Aula "${lastResponse}" atenda de fomra atenciosa exclareça de uma forma ampla a minha duvida que é "${userMessageInput}" o meu nome é ${user}. Se for possivel explicar por palavras suas e se achares necessario dê uma aula nova com este dados que tens.`;
-    console.log(Prompt);
     setIsLoading(true);
     try {
 
