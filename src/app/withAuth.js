@@ -66,7 +66,7 @@ class WithAuth extends React.Component {
       return (
         <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="flex justify-center items-center text-center space-x-2">
-            <Spin size="large" />
+            <Spin size="small" />
           </div>
         </div>
       );
@@ -78,7 +78,7 @@ class WithAuth extends React.Component {
       <div className="flex flex-col items-center space-y-4">
         <GrCircleAlert className="h-16 w-16 text-red-500" />
         <h1 className="text-3xl font-bold text-center">404 - Pagina bloqueada</h1>
-        <p className="text-gray-600 text-center">Para aproveitar todos os recursos do nosso aplicativo, por favor, faça o login.</p>
+        <p className="text-gray-600 text-center">Para aproveitar todos os recursos da MentorIA, por favor conte-se a sua conta se já verificaste o seu email.</p>
         <Link
           className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 "
           href="/login"

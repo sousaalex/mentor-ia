@@ -332,7 +332,7 @@ function Curso({ qualificacao }) {
               {loading || loadingMore ? (
                 <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-50 flex justify-center items-center">
                   <div className="flex justify-center items-center text-center space-x-2">
-                    <Spin size="large" />
+                    <Spin size="small" />
 
                   </div>
                 </div>
@@ -413,7 +413,7 @@ function Curso({ qualificacao }) {
                 {loading || loadingMore ? (
                   <div className="w-full h-full fixed top-0 left-0 bg-white bg-opacity-50 backdrop-blur-sm flex justify-center items-center">
                     <div className="flex justify-center items-center text-center space-x-2">
-                      <Spin size="default" />
+                      <Spin size="small" />
                       <p>Esta acção poderá tomar alguns minutos...</p>
                     </div>
                   </div>

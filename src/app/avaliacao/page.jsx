@@ -88,6 +88,7 @@ function Quiz() {
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
   const [ufcdName, setUfcdName] = useState(null);
   const [pergunta, setPergunta] = useState(null)
+  const [certificadoStatus, setCertificadoStatus] = useState('');
   const [dia, setDia] = useState(null);
 
 
@@ -142,14 +143,14 @@ function Quiz() {
     let DataAPI = localStorage.getItem("RespostaAPI");
     const storedUfcdquestion = localStorage.getItem('chatHistory');
 
-    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${storedUfcdquestion}" se ela tiver conteudos relevantes de acorodo a aula. Gere um quiz na com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
+    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${storedUfcdquestion}" se ela tiver conteudos relevantes de acorodo a aula. Gere um quiz na com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal e muito robusto e deficil, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
     setLoading(true);
 
     try {
       const messages = [
         {
           role: "system",
-          content: "Você é um Mentor, é essencial manter um foco estrito nos assuntos que o aluno quer durante as interações e Você só deve gerar os quizzes de acordo com o prompt enviado pelo user. O quiz deve ser muito robusto e as perguntas precisam ser variadas e difíceis. Gere uma pergunta por vez, sempre com quatro opções de escolhas, uma delas correta. Exemplo: pergunta:; em baixo as opções.",
+          content: "Você é um Mentor, é essencial manter um foco estrito nos assuntos que o aluno quer durante as interações e Você só deve gerar os quizzes de acordo com o prompt enviado pelo user. O quiz deve ser muito robusto e deficil de acertar as perguntas precisam ser variadas. Gere uma pergunta por vez, sempre com quatro opções de escolhas, apenas uma delas correta. Exemplo: pergunta:; em baixo as opções.",
         },
         { role: "user", content: promptContent },
         { role: "assistant", content: "Dê-me uma pergunta com quatro opções de resposta." },
@@ -227,6 +228,7 @@ function Quiz() {
     }
   };
 
+
   const submitAnswers = async () => {
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -240,7 +242,7 @@ function Quiz() {
           messages: [
             {
               role: "system",
-              content: `Você é um Mentor. Corrija as respostas de acordo com as perguntas originais,fornecça qual era a pergunta a reposta do Aluno ${user} e a correçao se necessaria some os pontos (4 pontos para cada resposta correta). No final, dê uma nota de 0 a 20. Se a nota for abaixo de 10, ofereça incentivo e apoio para tentar novamente. Se for entre 10 e 15, parabenize, mas sugira melhorias. Se for de 15 a 20, celebre com palavras de incentivo e emojis encorajadores. ##Não se esqueças de colocar markdown sempre na correção e  nunca forneça correção dos teste em tabelas é inaceitavel`,
+              content: `Você é um Mentor. Corrija as respostas de acordo com as perguntas originais, fornecça qual era a pergunta a reposta do Aluno ${user} e a correçao se necessaria some os pontos (4 pontos para cada resposta correta) ## Sejá muito atencioso na correção das respostas para que não haja problemas futuros. No final, mostre um campo "NOTA" e dê uma nota de 0 a 20. Se o campo "NOTA" for abaixo de 10, ofereça incentivo e apoio para tentar novamente. Em seguida mostre um campo "Permissão para certicado MentorIA" se o campo "NOTA" tiver um valor 10 ou abaixo de 10 neste campo será a sempre a palavra "Negada" e coloca um emogi correspondente. Se o campo "NOTA" tiver um valor acima dos 10 a palavra será sempre "Concedida" e coloca um emogi correspondente. Se o campo "NOTA" for entre 10 e 15, parabenize, mas sugira melhorias. Se o campo "NOTA" for de 15 a 20, celebre com palavras de incentivo e emojis encorajadores e aplavras bonitas. ##Não se esqueças de colocar markdown sempre na correção e nunca forneça correção dos teste em tabelas é inaceitavel`,
             },
             {
               role: "user",
@@ -249,18 +251,43 @@ function Quiz() {
           ],
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Erro ao enviar respostas para correção");
       }
-
+  
       const responseData = await response.json();
       const corrections = responseData.choices[0].message.content;
       setResults(corrections);
-    } catch (error) {
+      processCertificationPermission(corrections);
+/*       console.log(corrections);
+ */    } catch (error) {
       console.error("Erro ao corrigir respostas:", error);
     }
   };
+  
+  const removeEmojisAndToLowercase = (text) => {
+    return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B50}]/gu, '')
+               .replace(/\*\*/g, '') // Remove asteriscos
+               .toLowerCase();
+  };
+  
+  const processCertificationPermission = (results) => {
+    // Remove emojis and convert to lowercase
+    const cleanedResults = removeEmojisAndToLowercase(results);
+    // Regex to capture the certification permission
+    const permissionRegex = /permissão para certificado mentoria: ([\w\s]*)/;
+    const match = permissionRegex.exec(cleanedResults);
+    if (match) {
+      const permissionText = match[1].trim();
+        const status = permissionText.includes("concedida") ? "Concedida" : "Negada";
+          setCertificadoStatus(status)
+    } else {
+      console.log('Permissão para certificado MentorIA não encontrada.');
+    }
+  };
+  
+ 
 
   function preprocessText(text) {
     let cleanText = text.replace(/[^\w\s]/gi, "");
@@ -268,7 +295,7 @@ function Quiz() {
     return cleanText;
   }
 
-  /* funçao para recuperar onome */
+  /* funçao para recuperar ufcd */
 
   useEffect(() => {
     const storedUfcdName = localStorage.getItem('UFCD clicada');
@@ -283,8 +310,9 @@ function Quiz() {
     dia: dia,
   }
 
-  const handlGgeneratePdf = async () => {
+ /*  const handlGgeneratePdf = async () => {
     setCarregando(true)
+    
     try {
       const response = await axios.post('/api/generate-pdf', FormeDate, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -306,8 +334,40 @@ function Quiz() {
     // Limpa o timer caso o componente seja desmontado antes dos 5 segundos
     return () => clearTimeout(timer);
 
+  }; */
+
+  const handleGgeneratePdf = async () => {
+    if (certificadoStatus === 'Concedida') {
+      setCarregando(true);
+      try {
+        const response = await axios.post('/api/generate-pdf', FormeDate, { responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'MentorIA (correção).pdf');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error);  // Capture and display error details
+      } finally {
+        setCarregando(false);
+      }
+    } else {
+      console.log('Certificado não concedido. Ação bloqueada.');
+      return;
+    }
+     // Após 5 segundos, mudamos o estado e redirecionamos
+     const timer = setTimeout(() => {
+      setCarregando(false);
+      router.push('/agradecimentos');
+    }, 2000);
+
+    // Limpa o timer caso o componente seja desmontado antes dos 5 segundos
+    return () => clearTimeout(timer);
   };
 
+  
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -416,7 +476,7 @@ function Quiz() {
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button variant="outline"
-              className="text-slate-800 border rounded-md p-2 hover:bg-slate-100"
+              className="text-slate-800 border border-gray-700 rounded-md p-2 hover:bg-slate-100"
               onClick={() => {
                 fetchQuestionAndOptionsFromOpenAI();
                 setCurrentQuestionIndex(0);
@@ -427,16 +487,16 @@ function Quiz() {
                 setUserAnswers([]);
               }}
             >
-              Reiniciar
+              Novo Teste
             </Button>
             <Button
-              type="button"
-              onClick={handlGgeneratePdf}
-              className=" bg-slate-800 text-gray-50 border rounded-md p-2 hover:bg-transparent hover:border-slate-800 hover:text-slate-800"
-              disabled={carregando}
-            >
-              {carregando ? 'Gerando...' : ' Gerar PDF'}
-            </Button>
+        type="button"
+        onClick={handleGgeneratePdf}
+        className={`border rounded-md p-2 ${carregando ? 'bg-gray-500 cursor-not-allowed' : 'bg-slate-800 text-gray-50 hover:bg-transparent hover:border-slate-800 hover:text-slate-800'}`}
+        disabled={carregando || certificadoStatus === 'Negada'}
+      >
+        {carregando ? 'Aguarde...' : 'Obter Certificado'}
+      </Button>
 
           </CardFooter>
 

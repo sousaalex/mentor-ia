@@ -2,7 +2,7 @@
 import { message } from 'antd';
 
 export const successo = () => {
-  message.success('Login efectuado com sucesso. Aguarde até ser direcionado para a página curso.');
+  message.success('Entrada efectuada com sucesso.');
 };
 
 export const erroslogin = () => {

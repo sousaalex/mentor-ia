@@ -123,9 +123,9 @@ const handleTextToSpeech = (text) => {
 const Skeleton = () => (
   <div className="flex flex-col gap-4 p-4">
     <div className="flex items-start gap-3">
-      <div className="rounded-full bg-gray-200 h-10 w-10"></div>
-      <div className="flex-1 space-y-4 py-1">
-        <div className="h-3 bg-gray-200 rounded"></div>
+{/*       <div className="rounded-full bg-gray-200 h-10 w-10"></div>
+ */}      <div className="flex-1 max-w-xl space-y-4 py-1">
+        <div className="h-3 w-full bg-gray-200 rounded"></div>
         <div className="space-y-2">
           <div className="h-3 bg-gray-200 rounded"></div>
           <div className="h-3 bg-gray-200 rounded"></div>
@@ -134,6 +134,7 @@ const Skeleton = () => (
     </div>
   </div>
 );
+
 function Ufcd() {
   const router = useRouter();
   const chatEndRef = useRef(null);
@@ -478,19 +479,16 @@ function Ufcd() {
             )}
           </ScrollArea>
           <DrawerFooter className="flex justify-center items-center p-4">
-
-
             <div className="flex items-center space-x-3">
-
               <Button
-                className="inline-flex h-9 items-center justify-center rounded-md shadow-md shadow-cyan-400 bg-gradient-to-tr from-purple-400 via-blue-400 to-cyan-400 text-white px-4 text-sm font-medium"
+                className="inline-flex h-9 items-center justify-center rounded-md shadow-md bg-gradient-to-tr from-purple-500 via-blue-500 to-cyan-500 text-white px-4 text-sm font-medium"
                 onClick={!carregando ? showModal : null}
                 disabled={carregando}
               >
                 Duvidas
               </Button>
               <Button
-                className="inline-flex h-9 items-center justify-center rounded-md shadow-md shadow-cyan-400 bg-gradient-to-tr from-cyan-400 via-blue-400 to-purple-400 text-white px-4 text-sm font-medium"
+                className="inline-flex h-9 items-center justify-center rounded-md shadow-md bg-gradient-to-tr from-cyan-500 via-blue-500 to-purple-500 text-white px-4 text-sm font-medium"
                 onClick={!carregando ? handleRouter : null}
                 disabled={carregando}
               >
@@ -532,19 +530,19 @@ function Ufcd() {
                   rows={1}
                   value={userMessageInput}
                   onChange={(e) => setUserMessageInput(e.target.value)}
-                  className="min-h-[48px] rounded-2xl resize-none p-4 border border-neutral-400 shadow-sm pr-16"
+                  className="min-h-[48px] rounded-2xl resize-none p-4 shadow-sm pr-16"
                 />
                 <Button type="submit" size="icon" className="absolute w-8 h-8 top-3 right-3">
-                  <div className="p-2 bg-blue-100 rounded-full">
+                  <div className="p-2 bg-cyan-600 rounded-full">
 
                     {isLoading ? (
                       <>
-                        <PiSpinnerLight className="h-4 w-4 animate-spin ml-1 text-center" />
+                        <PiSpinnerLight className="h-4 w-4 text-gray-100 animate-spin  text-center" />
                       </>
                     ) : (
 
                       <HiArrowSmUp
-                        className="w-6 h-6 "
+                        className="w-6 h-6 text-gray-100 "
                         onClick={() => {
                           sendMessage()
                           setUserMessageInput('');

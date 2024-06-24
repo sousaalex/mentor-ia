@@ -48,7 +48,7 @@ const DrawerContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-gray-100 " />
+      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full  cursor-move hover:shadow-cyan-400 bg-gradient-to-tr from-purple-400 via-blue-400 to-cyan-400 " />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>

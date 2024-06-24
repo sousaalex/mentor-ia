@@ -32,5 +32,5 @@ export const campos = () => {
   };
 
   export const mailIgual = () => {
-    message.warning('Aluno já verificado');
+    message.warning('Email já verificado');
   };
