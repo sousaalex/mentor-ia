@@ -260,15 +260,14 @@ function Quiz() {
       const corrections = responseData.choices[0].message.content;
       setResults(corrections);
       processCertificationPermission(corrections);
-/*       console.log(corrections);
- */    } catch (error) {
+    } catch (error) {
       console.error("Erro ao corrigir respostas:", error);
     }
   };
   
   const removeEmojisAndToLowercase = (text) => {
     return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B50}]/gu, '')
-               .replace(/\*\*/g, '') // Remove asteriscos
+               .replace(/\*\*/g, '') 
                .toLowerCase();
   };
   
@@ -288,12 +287,6 @@ function Quiz() {
   };
   
  
-
-  function preprocessText(text) {
-    let cleanText = text.replace(/[^\w\s]/gi, "");
-    cleanText = cleanText.split(/\s+/).slice(0, 800).join(" ");
-    return cleanText;
-  }
 
   /* funçao para recuperar ufcd */
 
