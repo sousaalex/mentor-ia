@@ -47,7 +47,19 @@ const keepAlive = async () => {
   }
 };
 
-
+const keepAlived = async () => {
+  try {
+    await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt: 'quem é vc?' }),
+    });
+  } catch (error) {
+    console.error('Erro ao enviar keep-alive request:', error);
+  }
+};
 
 
 
@@ -72,7 +84,12 @@ function Curso({ qualificacao }) {
   const [userMail, setUserMail] = useState(null)
 
   useEffect(() => {
-    keepAlive();
+    keepAlive(
+      console.log('KeepAlive Airequest1.0 sent successfully')
+    );
+    keepAlived(
+      console.log('KeepAlive Airequest1.5-pro-001 sent successfully')
+    );
   }, []);
 
   useEffect(() => {

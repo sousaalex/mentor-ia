@@ -15,7 +15,7 @@ import '../globals.css'
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import firebaseConfig from '../../firebaseConfig'
-import { onAuthStateChanged, getAuth, signOut, } from 'firebase/auth';
+import {getAuth} from 'firebase/auth';
 import withAuth from '../withAuth'
 import { marked } from 'marked';
 import { HiArrowSmUp } from "react-icons/hi";
@@ -49,7 +49,7 @@ const TypingAnimation = ({ text }) => {
     const animateText = async () => {
       for (let i = 0; i < text.length; i++) {
         if (!isMounted) return;
-        await new Promise((resolve) => setTimeout(resolve, 20));
+        await new Promise((resolve) => setTimeout(resolve, 2));
         if (isMounted) {
           setContent((prevContent) => prevContent + text.charAt(i));
           window.requestAnimationFrame(() => {
@@ -109,7 +109,7 @@ const TypingAnimationHeader = ({ text }) => {
 
 // Função para remover caracteres indesejados
 const cleanText = (text) => {
-  return text.replace(/[*]|[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+  return text.replace(/[.*+#]|[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|(\bhttps?:\/\/\S+\b)/gu, '');
 };
 
 // Função para converter texto em fala
@@ -270,43 +270,91 @@ function Ufcd() {
   const handleCardClick = async () => {
     setIsDialogOpen(true);
     setCarregando(true);
+    let promptContent = `Eu sou ${user} e sou estudante da Escola Profissional do Fundão e estou me cursando em ${courseName}. Quero solicitar uma recuperaçao sobre ${ufcdName} porque eu andei faltando as aulas e por fim perdi o modulo, você deve ser abrangente e muito explicativo. Primeiro, forneça uma visão geral dos principais tópicos relacionados a ${courseName}. Em seguida, aborde cada tópico de forma detalhada, explicando os conceitos, definições, exemplos práticos e aplicações.
 
-    let promptContent = `Olá, Eu sou ${user} podes dar uma aula muito produtiva em que tu abordaras todos os tópicos e explicaras de uma maneira ampla e aberta. Quero uma aula com conteúdo, exemplos e exercícios baseados no conteúdo e matéria que abordare e tudo que tem direito a ter numa aula para uma turma de ${courseName} com a UFCD "${ufcdName}" com os seguintes tópicos:\n\n`;
+Se a ${courseName} envolver alguma linguagem de programação ou conteúdo técnico, apresente trechos de código funcional, com explicações sobre a sintaxe, estrutura e funcionalidades relevantes.
 
+Ao longo da explicação, use uma linguagem clara, objetiva e acessível, sempre se comunicando em português europeu de Portugal. Encoraje o aluno a fazer perguntas e solicitar mais esclarecimentos sempre que necessário.
+
+No final da explicação, verifique se o aluno compreendeu os principais pontos abordados e ofereça-se para responder a quaisquer dúvidas adicionais.`
+
+/*     let promptContent = `Olá, Eu sou ${user} podes dar uma aula  e sei que Você é um expert em ${courseName} e na ${ufcdName}, quero que você seja meu instrutor. Por favor, me ajude a aprender o assunto da melhor maneira possível, começando pelos conceitos básicos e avançando para tópicos mais complexos. Quero aula com os seguintes tópicos:\n\n`
     promptContent += `Aula:\n`;
     promptContent += `Objetivos de Aprendizagem:\n`;
     promptContent += `Introdução:\n`;
     promptContent += `Desenvolvimento:\n`;
-    promptContent += `Conclusão:\n`;
-
-    try {
-      const response = await fetch('https://airequest.onrender.com/request', {
+    promptContent += `Conclusão:\n`; */
+/*     let promptContent = `Olá, Eu sou ${user} podes dar uma aula muito produtiva em que tu abordaras todos os tópicos e explicaras de uma maneira ampla e aberta. Quero uma aula com conteúdo, exemplos e exercícios baseados no conteúdo e matéria que abordare e tudo que tem direito a ter numa aula para uma turma de ${courseName} com a UFCD "${ufcdName}" com os seguintes tópicos:\n\n`;
+ *//* 
+    promptContent += `Aula:\n`;
+    promptContent += `Objetivos de Aprendizagem:\n`;
+    promptContent += `Introdução:\n`;
+    promptContent += `Desenvolvimento:\n`;
+    promptContent += `Conclusão:\n`; */
+  try {
+      const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pergunta: promptContent,
+          prompt: promptContent,
         }),
       });
-
+    
       const data = await response.json();
-      if (data && data.resposta) {
-        localStorage.setItem('RespostaAPI', data.resposta);
-        const newMessage = { message: data.resposta, sender: 'bot', timestamp: Date.now() };
+      if (data && data.response) {
+        localStorage.setItem('RespostaAPI', data.response);
+        const newMessage = { message: data.response, sender: 'bot', timestamp: Date.now() };
         setAllChatHistory(prevHistory => [...prevHistory, newMessage]);
-
+    
         const dbRef = firebase.database().ref('allChatHistory');
         dbRef.push(newMessage);
-
-        setLastResponse(data.resposta);
-    } else {
+    
+        setLastResponse(data.response);
+      } else {
         console.error('Resposta da API mal formada:', data);
       }
     } catch (error) {
       console.error('Erro ao enviar pergunta ou receber resposta:', error);
-    }
-
+    } 
+   /*    try {
+        const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: promptContent,
+          }),
+        });
+      
+        const data = await response.json();
+        if (data && data.response) {
+          // Remover quebras de linha no meio de frases, manter no final de frases específicas
+          const respostaSemQuebras = data.response.replace(/([^.:\*\`]|\.\s|\:\s|\*\*\s|\`\`\`\s)\n/g, '$1 ');
+      
+          localStorage.setItem('RespostaAPI', respostaSemQuebras);
+          const newMessage = { message: respostaSemQuebras, sender: 'bot', timestamp: Date.now() };
+          setAllChatHistory(prevHistory => [...prevHistory, newMessage]);
+      
+          const dbRef = firebase.database().ref('allChatHistory');
+          dbRef.push(newMessage);
+      
+          setLastResponse(respostaSemQuebras);
+          console.log(respostaSemQuebras);
+      
+        } else {
+          console.error('Resposta da API mal formada:', data);
+        }
+      } catch (error) {
+        console.error('Erro ao enviar pergunta ou receber resposta:', error);
+      } */
+      
+      
+      
+      
+      
     setCarregando(false);
     setNewQuestion('');
   };
@@ -329,7 +377,7 @@ function Ufcd() {
   // Função sendMessage para envio de mensagem pelo usuário
   const sendMessage = async () => {
     if (!userMessageInput.trim()) return; // Evita envio de mensagens vazias
-    let Prompt = `De acordo a esta Aula "${lastResponse}" atenda de fomra atenciosa exclareça de uma forma ampla a minha duvida que é "${userMessageInput}" o meu nome é ${user}. Se for possivel explicar por palavras suas e se achares necessario dê uma aula nova com este dados que tens.`;
+    let Prompt = `De acordo a esta Aula "${lastResponse}" atenda de forma atenciosa exclareça de uma forma ampla a minha duvida que é "${userMessageInput}" o meu nome é ${user}. Se for possivel explicar por palavras suas e se achares necessario dê uma aula nova com este dados que tens.  `;
     setIsLoading(true);
     try {
 
@@ -342,13 +390,13 @@ function Ufcd() {
       dbRef.push(userMessage);
 
       // Enviar mensagem para o servidor e receber resposta
-      const response = await fetch('https://airequest.onrender.com/request', {
+      const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pergunta: Prompt,
+          prompt: Prompt,
         }),
       });
 
@@ -359,7 +407,7 @@ function Ufcd() {
       const data = await response.json();
 
       // Adicionar a resposta do bot ao histórico total do chat
-      const botMessage = { message: data.resposta, sender: 'bot', timestamp: Date.now() };
+      const botMessage = { message: data.response, sender: 'bot', timestamp: Date.now() };
       setChatHistory(prevHistory => {
         const updatedHistory = [...prevHistory, botMessage];
         // Armazenar o histórico completo do chat no localStorage
@@ -502,7 +550,7 @@ function Ufcd() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:w-[600px]  rounded-md ">
           <div className="flex flex-col h-[500px]">
-            <DialogHeader className="border-b px-4 py-3">
+            <DialogHeader className="border-b px-4 py-3 ">
               <DialogTitle>Coloca as tuas duvidas sobre a temática aqui</DialogTitle>
             </DialogHeader>
             <ScrollArea className="flex-1 overflow-auto py-2">

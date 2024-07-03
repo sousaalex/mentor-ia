@@ -6,13 +6,8 @@ import 'firebase/compat/database';
 import firebaseConfig from '../../firebaseConfig'
 import "../globals.css";
 import { Button } from "@/components/ui/button"
-import { DialogTrigger, DialogTitle, DialogDescription, DialogHeader, DialogFooter, DialogContent, Dialog } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { CardTitle, CardDescription, CardHeader, CardContent, Card, CardFooter } from "@/components/ui/card"
+import { CardTitle, CardHeader, CardContent, Card, CardFooter } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { useRouter } from 'next/navigation';
 import withAuth from '../withAuth'
 import { marked } from 'marked';
@@ -33,21 +28,19 @@ try {
 
 const TypingAnimation = ({ text }) => {
   const [content, setContent] = useState('');
-  const chatEndRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
 
     const animateText = async () => {
       setContent(''); // Reset content when text changes
-      for (let i = 0; i < text.length; i++) {
-        if (!isMounted) return;
-        await new Promise((resolve) => setTimeout(resolve, 35));
-        if (isMounted) {
-          setContent((prevContent) => prevContent + text.charAt(i));
-          /* window.requestAnimationFrame(() => {
-            chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-          }); */
+      if (text && text.length > 0) {
+        for (let i = 0; i < text.length; i++) {
+          if (!isMounted) return;
+          await new Promise((resolve) => setTimeout(resolve, 35));
+          if (isMounted) {
+            setContent((prevContent) => prevContent + text.charAt(i));
+          }
         }
       }
     };
@@ -61,11 +54,11 @@ const TypingAnimation = ({ text }) => {
 
   return (
     <>
-      <div className="text-display">{content}</div>
-      {/*       <div ref={chatEndRef} />
- */}    </>
+      <div className="text-display" dangerouslySetInnerHTML={{ __html: marked(content) }}/>
+    </>
   );
 };
+
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
 
@@ -138,73 +131,81 @@ function Quiz() {
 
 
 
-
   const fetchQuestionAndOptionsFromOpenAI = async () => {
     let DataAPI = localStorage.getItem("RespostaAPI");
     const storedUfcdquestion = localStorage.getItem('chatHistory');
 
-    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${storedUfcdquestion}" se ela tiver conteudos relevantes de acorodo a aula. Gere um quiz na com 4 opções de resposta somente de acrdo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal e muito robusto e deficil, sempre tens que  fornecer emogis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem  perguntas identicas a elas.`;
+    // Assegurando que generatedQuestions está definido
+    let generatedQuestions = JSON.parse(localStorage.getItem('generatedQuestions')) || [];
+
+    let promptContent = `De acordo com esta Aula "${DataAPI}" e esta conversa "${storedUfcdquestion}" se ela tiver conteudos relevantes de acordo a aula. Gere uma pergunta de quiz na com 4 opções de resposta somente de acordo com o conteudo que recebeste não podes desviar de forma alguma e não se esqueças o quizz têm que estar em português de portugal e muito robusto e difícil, sempre tens que fornecer emojis para as perguntas ficarem embelezadas na tela. ##As seguintes perguntas já foram geradas: ${JSON.stringify(generatedQuestions)} elas não podem ser reenviadas de forma alguma e nem perguntas idênticas a elas.`;
+
     setLoading(true);
 
     try {
-      const messages = [
-        {
-          role: "system",
-          content: "Você é um Mentor, é essencial manter um foco estrito nos assuntos que o aluno quer durante as interações e Você só deve gerar os quizzes de acordo com o prompt enviado pelo user. O quiz deve ser muito robusto e deficil de acertar as perguntas precisam ser variadas. Gere uma pergunta por vez, sempre com quatro opções de escolhas, apenas uma delas correta. Exemplo: pergunta:; em baixo as opções.",
-        },
-        { role: "user", content: promptContent },
-        { role: "assistant", content: "Dê-me uma pergunta com quatro opções de resposta." },
-      ];
+        const response = await fetch("https://airequest1-5-pro-001.onrender.com/api/generate_quiz", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: promptContent }),
+        });
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages,
-        }),
-      });
+        if (!response.ok) {
+            throw new Error("Erro ao carregar pergunta e opções de resposta");
+        }
 
-      if (!response.ok) {
-        throw new Error("Erro ao carregar pergunta e opções de resposta");
-      }
+        const responseData = await response.json();
+        console.log(responseData);
 
-      const responseData = await response.json();
-      const assistantResponse = responseData.choices[0].message.content;
+        // Verifica se a resposta contém o campo response
+        if (responseData.response) {
+            // Extrai a pergunta do campo response usando regex
+            const questionMatch = responseData.response.match(/question:\s*(.*?)(?:\n|$)/);
+            const question = questionMatch ? questionMatch[1].trim() : null;
 
-      const responseLines = assistantResponse.split("\n").filter(Boolean);
-      const question = responseLines[0]?.trim();
-      let options = responseLines.slice(1, 5).map((line) => line.trim());
+            // Extrai as opções do campo response usando regex
+            const optionsMatch = responseData.response.match(/options:\s*([\s\S]*)/);
+            /*             const optionsMatch = responseData.response.match(/options:\s*((?:\s*[a-d]\)\s.*?\n)+)/);
+ */            let options = [];
+            if (optionsMatch) {
+                options = optionsMatch[1]
+                    .split('\n')
+                    .map(option => option.trim())
+                    .filter(option => option.length > 0);
+            }
 
-      if (options.length < 4) {
-        options = Array(4 - options.length).fill("Não sei").concat(options);
-      }
+            if (question && options.length === 4) {
+                console.log("Pergunta:", question);
+                console.log("Opções:", options);
 
-      if (!question || options.length !== 4) {
-        throw new Error("Formato inesperado da resposta do assistente");
-      }
+                setGeneratedQuestions((prevQuestions) => {
+                    const updatedQuestions = [...prevQuestions, question];
+                    localStorage.setItem('generatedQuestions', JSON.stringify(updatedQuestions));
+                    return updatedQuestions;
+                });
 
-      setGeneratedQuestions((prevQuestions) => [...prevQuestions, question]); // Atualiza o estado com a nova pergunta
+                setQuestions((prevQuestions) => [
+                    ...prevQuestions,
+                    { question, options },
+                ]);
 
-      setQuestions((prevQuestions) => [
-        ...prevQuestions,
-        {
-          question,
-          options,
-        },
-      ]);
+                setCurrentQuestion({ question, options });
+            } else {
+                throw new Error("Resposta da API não contém uma pergunta válida ou não possui 4 opções");
+            }
+        } else {
+            throw new Error("Resposta da API não contém campo response");
+        }
 
-      setCurrentQuestion({ question, options });
-      setLoading(false);
+        setLoading(false);
     } catch (error) {
-      console.error("Erro ao carregar pergunta e opções de resposta:", error);
-      setLoading(false);
+        console.error("Erro ao carregar pergunta e opções de resposta:", error);
+        setLoading(false);
     }
-  };
+};
 
+  
 
   useEffect(() => {
     fetchQuestionAndOptionsFromOpenAI();
@@ -219,7 +220,7 @@ function Quiz() {
       },
     ]);
 
-    if (currentQuestionIndex < 5) {
+    if (currentQuestionIndex < 10) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       fetchQuestionAndOptionsFromOpenAI();
     } else {
@@ -228,7 +229,7 @@ function Quiz() {
     }
   };
 
-
+/* 
   const submitAnswers = async () => {
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -264,7 +265,35 @@ function Quiz() {
       console.error("Erro ao corrigir respostas:", error);
     }
   };
+   */
+  let Prompt = `corrija esta avaliação ${JSON.stringify(userAnswers)} do aluno ${user}`
+
+  const submitAnswers = async () => {
+    try {
+      const response = await fetch("https://airequest1-5-pro-001.onrender.com/api/grade_quiz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: Prompt,
+        }),
+      });
   
+      if (!response.ok) {
+        throw new Error("Erro ao enviar respostas para correção");
+      }
+  
+      const responseData = await response.json();
+      const corrections = responseData.response;
+      console.log(corrections);
+      setResults(corrections);
+      processCertificationPermission(corrections);
+    } catch (error) {
+      console.error("Erro ao corrigir respostas:", error);
+    }
+  };
+
   const removeEmojisAndToLowercase = (text) => {
     return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B50}]/gu, '')
                .replace(/\*\*/g, '') 
@@ -422,21 +451,22 @@ function Quiz() {
           </h1>
           <div className="border-t border-gray-300 pt-8">
             <div className="space-y-4">
-              <div className=" font-normal p-8 text-xl text-gray-800 text-center">
-                {currentQuestion && <TypingAnimation text={currentQuestion.question} />}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {currentQuestion &&
-                  currentQuestion.options.map((option, index) => (
-                    <button
-                      key={index}
-                      className="text-blue-600 font-bold p-3 bg-transparent border border-blue-600  hover:bg-blue-600 hover:text-white rounded-lg"
-                      onClick={() => handleAnswerClick(option)}
-                    >
-                      {option}
-                    </button>
-                  ))}
-              </div>
+            <div className="font-normal p-8 text-xl text-gray-800 text-center">
+    {currentQuestion && currentQuestion.question && (
+      <TypingAnimation text={currentQuestion.question} />
+    )}
+  </div>
+  <div className="grid grid-cols-2 gap-4">
+    {currentQuestion && currentQuestion.options && Array.isArray(currentQuestion.options) && currentQuestion.options.map((option, index) => (
+      <button
+        key={index}
+        className="text-blue-600 font-bold w-auto h-auto p-3 bg-transparent border border-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
+        onClick={() => handleAnswerClick(option)}
+      >
+      <div className='text-blue-600'  dangerouslySetInnerHTML={{ __html: marked(option) }}/>
+      </button>
+    ))}
+  </div>
             </div>
           </div>
         </div>
