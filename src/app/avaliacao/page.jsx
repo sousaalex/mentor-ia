@@ -156,8 +156,8 @@ function Quiz() {
         }
 
         const responseData = await response.json();
-        console.log(responseData);
-
+/*         console.log(responseData);
+ */
         // Verifica se a resposta contém o campo response
         if (responseData.response) {
             // Extrai a pergunta do campo response usando regex
@@ -176,8 +176,8 @@ function Quiz() {
             }
 
             if (question && options.length === 4) {
-                console.log("Pergunta:", question);
-                console.log("Opções:", options);
+               /*  console.log("Pergunta:", question);
+                console.log("Opções:", options); */
 
                 setGeneratedQuestions((prevQuestions) => {
                     const updatedQuestions = [...prevQuestions, question];
@@ -286,8 +286,8 @@ function Quiz() {
   
       const responseData = await response.json();
       const corrections = responseData.response;
-      console.log(corrections);
-      setResults(corrections);
+/*       console.log(corrections);
+ */      setResults(corrections);
       processCertificationPermission(corrections);
     } catch (error) {
       console.error("Erro ao corrigir respostas:", error);
