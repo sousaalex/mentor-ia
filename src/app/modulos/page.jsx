@@ -116,7 +116,7 @@ const handleTextToSpeech = (text) => {
   const cleanedText = cleanText(text); // Limpa o texto antes de falar
   const utterance = new SpeechSynthesisUtterance(cleanedText);
   utterance.lang = 'pt-PT'; // Define o idioma para português europeu
-  utterance.rate = 2.5; // Define a taxa de fala um pouco mais rápida
+  utterance.rate = 1.5; // Define a taxa de fala um pouco mais rápida
   utterance.pitch = 1.2; // Define o tom um pouco mais alto
   utterance.volume = 1; // Define o volume no máximo
   
