@@ -31,35 +31,9 @@ try {
 }
 
 
-const apiCache = {};
+/* const apiCache = {};
 
-const keepAlive = async () => {
-  try {
-    await fetch('https://airequest.onrender.com/request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ pergunta: 'quem é vc?' }),
-    });
-  } catch (error) {
-    console.error('Erro ao enviar keep-alive request:', error);
-  }
-};
-
-const keepAlived = async () => {
-  try {
-    await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt: 'quem é vc?' }),
-    });
-  } catch (error) {
-    console.error('Erro ao enviar keep-alive request:', error);
-  }
-};
+ */
 
 
 
@@ -82,15 +56,6 @@ function Curso({ qualificacao }) {
   const [userName, setUserName] = useState(null)
   const [userSurname, setUserSurname] = useState(null)
   const [userMail, setUserMail] = useState(null)
-
-  useEffect(() => {
-    keepAlive(
-      console.log('KeepAlive Airequest1.0 sent successfully')
-    );
-    keepAlived(
-      console.log('KeepAlive Airequest1.5-pro-001 sent successfully')
-    );
-  }, []);
 
   useEffect(() => {
     const userEmailFromLocalStorage = localStorage.getItem('mailUser');
@@ -431,7 +396,7 @@ function Curso({ qualificacao }) {
                   <div className="w-full h-full fixed top-0 left-0 bg-white bg-opacity-50 backdrop-blur-sm flex justify-center items-center">
                     <div className="flex justify-center items-center text-center space-x-2">
                       <Spin size="small" />
-                      <p>Esta acção poderá tomar alguns minutos...</p>
+                      <p className=' animate-pulse'>Esta acção poderá tomar alguns segundos...</p>
                     </div>
                   </div>
                 ) : (

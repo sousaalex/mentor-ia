@@ -19,9 +19,8 @@ import {getAuth} from 'firebase/auth';
 import withAuth from '../withAuth'
 import { marked } from 'marked';
 import { HiArrowSmUp } from "react-icons/hi";
-
-
-
+import Skeleton from '../../components/ui/Skeleton'
+import TypingAnimation from '../../components/ui/TypingAnimation'
 
 
 // Inicialização do Firebase
@@ -38,7 +37,7 @@ try {
 
 const storageKey = "dadosDaAPI";
 
-const TypingAnimation = ({ text }) => {
+/* const TypingAnimation = ({ text }) => {
   const [content, setContent] = useState('');
   const chatEndRef = useRef(null);
 
@@ -72,7 +71,7 @@ const TypingAnimation = ({ text }) => {
       <div ref={chatEndRef} />
     </>
   );
-};
+}; */
 
 const TypingAnimationHeader = ({ text }) => {
   const [content, setContent] = useState('');
@@ -114,26 +113,24 @@ const cleanText = (text) => {
 
 // Função para converter texto em fala
 const handleTextToSpeech = (text) => {
-  const cleanTextToSpeak = cleanText(text); // Limpa o texto antes de falar
-  const utterance = new SpeechSynthesisUtterance(cleanTextToSpeak);
+  const cleanedText = cleanText(text); // Limpa o texto antes de falar
+  const utterance = new SpeechSynthesisUtterance(cleanedText);
   utterance.lang = 'pt-PT'; // Define o idioma para português europeu
+  utterance.rate = 2.5; // Define a taxa de fala um pouco mais rápida
+  utterance.pitch = 1.2; // Define o tom um pouco mais alto
+  utterance.volume = 1; // Define o volume no máximo
+  
+  // Adiciona uma pausa antes e depois da fala
+ /*  utterance.onstart = () => {
+    console.log('Começando a falar...');
+  };
+  
+  utterance.onend = () => {
+    console.log('Terminei de falar!');
+  }; */
+  
   window.speechSynthesis.speak(utterance);
 };
-
-const Skeleton = () => (
-  <div className="flex flex-col gap-4 p-4">
-    <div className="flex items-start gap-3">
-{/*       <div className="rounded-full bg-gray-200 h-10 w-10"></div>
- */}      <div className="flex-1 max-w-xl space-y-4 py-1">
-        <div className="h-3 w-full bg-gray-200 rounded"></div>
-        <div className="space-y-2">
-          <div className="h-3 bg-gray-200 rounded"></div>
-          <div className="h-3 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 function Ufcd() {
   const router = useRouter();
@@ -264,7 +261,10 @@ function Ufcd() {
   // Função para fechar o diálogo
   const closeDialog = () => {
     setAllChatHistory([])
+    window.speechSynthesis.cancel(); // Interrompe a fala
     setIsDialogOpen(false);
+    setIsSpeaking(false);
+
 
   };
   const handleCardClick = async () => {
@@ -277,20 +277,6 @@ Se a ${courseName} envolver alguma linguagem de programação ou conteúdo técn
 Ao longo da explicação, use uma linguagem clara, objetiva e acessível, sempre se comunicando em português europeu de Portugal. Encoraje o aluno a fazer perguntas e solicitar mais esclarecimentos sempre que necessário.
 
 No final da explicação, verifique se o aluno compreendeu os principais pontos abordados e ofereça-se para responder a quaisquer dúvidas adicionais.`
-
-/*     let promptContent = `Olá, Eu sou ${user} podes dar uma aula  e sei que Você é um expert em ${courseName} e na ${ufcdName}, quero que você seja meu instrutor. Por favor, me ajude a aprender o assunto da melhor maneira possível, começando pelos conceitos básicos e avançando para tópicos mais complexos. Quero aula com os seguintes tópicos:\n\n`
-    promptContent += `Aula:\n`;
-    promptContent += `Objetivos de Aprendizagem:\n`;
-    promptContent += `Introdução:\n`;
-    promptContent += `Desenvolvimento:\n`;
-    promptContent += `Conclusão:\n`; */
-/*     let promptContent = `Olá, Eu sou ${user} podes dar uma aula muito produtiva em que tu abordaras todos os tópicos e explicaras de uma maneira ampla e aberta. Quero uma aula com conteúdo, exemplos e exercícios baseados no conteúdo e matéria que abordare e tudo que tem direito a ter numa aula para uma turma de ${courseName} com a UFCD "${ufcdName}" com os seguintes tópicos:\n\n`;
- *//* 
-    promptContent += `Aula:\n`;
-    promptContent += `Objetivos de Aprendizagem:\n`;
-    promptContent += `Introdução:\n`;
-    promptContent += `Desenvolvimento:\n`;
-    promptContent += `Conclusão:\n`; */
   try {
       const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
         method: 'POST',
@@ -318,43 +304,7 @@ No final da explicação, verifique se o aluno compreendeu os principais pontos 
     } catch (error) {
       console.error('Erro ao enviar pergunta ou receber resposta:', error);
     } 
-   /*    try {
-        const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt: promptContent,
-          }),
-        });
-      
-        const data = await response.json();
-        if (data && data.response) {
-          // Remover quebras de linha no meio de frases, manter no final de frases específicas
-          const respostaSemQuebras = data.response.replace(/([^.:\*\`]|\.\s|\:\s|\*\*\s|\`\`\`\s)\n/g, '$1 ');
-      
-          localStorage.setItem('RespostaAPI', respostaSemQuebras);
-          const newMessage = { message: respostaSemQuebras, sender: 'bot', timestamp: Date.now() };
-          setAllChatHistory(prevHistory => [...prevHistory, newMessage]);
-      
-          const dbRef = firebase.database().ref('allChatHistory');
-          dbRef.push(newMessage);
-      
-          setLastResponse(respostaSemQuebras);
-          console.log(respostaSemQuebras);
-      
-        } else {
-          console.error('Resposta da API mal formada:', data);
-        }
-      } catch (error) {
-        console.error('Erro ao enviar pergunta ou receber resposta:', error);
-      } */
-      
-      
-      
-      
-      
+
     setCarregando(false);
     setNewQuestion('');
   };
@@ -377,7 +327,7 @@ No final da explicação, verifique se o aluno compreendeu os principais pontos 
   // Função sendMessage para envio de mensagem pelo usuário
   const sendMessage = async () => {
     if (!userMessageInput.trim()) return; // Evita envio de mensagens vazias
-    let Prompt = `De acordo a esta Aula "${lastResponse}" atenda de forma atenciosa exclareça de uma forma ampla a minha duvida que é "${userMessageInput}" o meu nome é ${user}. Se for possivel explicar por palavras suas e se achares necessario dê uma aula nova com este dados que tens.  `;
+    let Prompt = `De acordo a esta Aula "${lastResponse}" atenda de forma atenciosa exclareça de uma forma ampla a minha duvida que é "${userMessageInput}" o meu nome é ${user}. Se for possivel explicar por palavras suas e se achares necessario dê uma aula nova com este dados que tens.`;
     setIsLoading(true);
     try {
 
@@ -390,7 +340,7 @@ No final da explicação, verifique se o aluno compreendeu os principais pontos 
       dbRef.push(userMessage);
 
       // Enviar mensagem para o servidor e receber resposta
-      const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/generate_content', {
+      const response = await fetch('https://airequest1-5-pro-001.onrender.com/api/clarify_doubtst', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -460,7 +410,7 @@ No final da explicação, verifique se o aluno compreendeu os principais pontos 
 
 
   // Função para fazer o autoscrool instantâneo
-  useEffect(() => {
+/*   useEffect(() => {
     const observer = new MutationObserver(() => {
       chatEndRef.current?.scrollIntoView({ behavior: "instant" });
     });
@@ -468,10 +418,12 @@ No final da explicação, verifique se o aluno compreendeu os principais pontos 
     observer.observe(document.querySelector('.grid'), { childList: true });
 
     return () => observer.disconnect();
-  }, []);
+  }, []); */
 
   function handleRouter() {
     router.push('/avaliacao')
+    window.speechSynthesis.cancel(); // Interrompe a fala
+    setIsSpeaking(false);
   }
 
   return (
@@ -488,9 +440,7 @@ No final da explicação, verifique se o aluno compreendeu os principais pontos 
           <ScrollArea className="flex flex-col h-96 overflow-y-auto border-b border-gray-200">
             {carregando ? (
               <>
-                <Skeleton />
-                <Skeleton />
-                <Skeleton />
+                <Skeleton/>                
               </>
 
 

@@ -460,12 +460,15 @@ function Quiz() {
     {currentQuestion && currentQuestion.options && Array.isArray(currentQuestion.options) && currentQuestion.options.map((option, index) => (
       <button
         key={index}
-        className="text-blue-600 font-bold w-auto h-auto p-3 bg-transparent border border-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
+        className="text-blue-950 font-bold w-auto h-auto p-3 bg-transparent border border-blue-950  hover:text-white rounded-lg"
         onClick={() => handleAnswerClick(option)}
       >
-      <div className='text-blue-600'  dangerouslySetInnerHTML={{ __html: marked(option) }}/>
+      <div className='text-blue-950'  dangerouslySetInnerHTML={{ __html: marked(option) }}/>
       </button>
     ))}
+  </div>
+  <div className='flex text-center mx-auto justify-center items-start'>
+  <p className='text-gray-400 text-xs texte center'>Vale a pena assegurar que este conteúdo foi criado por uma IA generativa.</p>
   </div>
             </div>
           </div>
@@ -497,7 +500,10 @@ function Quiz() {
               </div>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <div className='flex text-center mx-auto justify-center items-start'>
+    <p className='text-gray-500 text-xs texte center animate-pulse'>Vale a pena assegurar que este conteúdo foi criado por uma IA generativa.</p>
+  </div>
+          <CardFooter className="flex justify-between mt-2">
             <Button variant="outline"
               className="text-slate-800 border border-gray-700 rounded-md p-2 hover:bg-slate-100"
               onClick={() => {
@@ -520,11 +526,12 @@ function Quiz() {
       >
         {carregando ? 'Aguarde...' : 'Obter Certificado'}
       </Button>
-
+    
+   
           </CardFooter>
 
         </Card>
-
+              
       </main>
     );
   } else {
