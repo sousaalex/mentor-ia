@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import withAuth from '../withAuth'
 import { marked } from 'marked';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 
 
 // Inicialização do Firebase
@@ -69,28 +69,28 @@ function Quiz() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
-  const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showQuestions, setShowQuestions] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [response, setResponse] = useState("");
-  const [results, setResults] = useState(null);
+/*   const [response, setResponse] = useState("");
+ */  const [results, setResults] = useState(null);
   const [modalOpen, setModalOpen] = useState(false); // Estado para controlar se o modal está aberto ou fechado
   const [curso, setCurso] = useState('');
   const [carregando, setCarregando] = useState(false);
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
   const [ufcdName, setUfcdName] = useState(null);
-  const [pergunta, setPergunta] = useState(null)
+/*const [pergunta, setPergunta] = useState(null)*/
   const [certificadoStatus, setCertificadoStatus] = useState('');
+  const [nota, setNota] = useState('');
   const [dia, setDia] = useState(null);
 
 
-
-  useEffect(() => {
+/* 
+   useEffect(() => {
     const currentDate = new Date();
     const formatted = format(currentDate, 'dd/MM/yyyy HH:mm:ss');
     setDia(formatted);
-  }, []);
+  }, []);  */
 
 
  /*  useEffect(() => {
@@ -300,7 +300,7 @@ function Quiz() {
                .toLowerCase();
   };
   
-  const processCertificationPermission = (results) => {
+/*   const processCertificationPermission = (results) => {
     // Remove emojis and convert to lowercase
     const cleanedResults = removeEmojisAndToLowercase(results);
     // Regex to capture the certification permission
@@ -314,8 +314,36 @@ function Quiz() {
       console.log('Permissão para certificado MentorIA não encontrada.');
     }
   };
-  
- 
+   */
+  const processCertificationPermission = (results) => {
+    // Remove emojis e converte para lowercase
+    const cleanedResults = removeEmojisAndToLowercase(results);
+    
+    // Regex para capturar a permissão para o certificado
+    const permissionRegex = /permissão para certificado mentoria: ([\w\s]*)/;
+    const permissionMatch = permissionRegex.exec(cleanedResults);
+    
+    if (permissionMatch) {
+        const permissionText = permissionMatch[1].trim();
+        const status = permissionText.includes("concedida") ? "Concedida" : "Negada";
+        setCertificadoStatus(status);
+    } else {
+        console.log('Permissão para certificado MentorIA não encontrada.');
+    }
+
+    // Regex para capturar o valor de notas (assumindo um padrão específico como "nota: 10")
+    const notaRegex = /nota: (\d+)/i;
+    const notaMatch = notaRegex.exec(cleanedResults);
+    
+    if (notaMatch) {
+        const notaFinal = notaMatch[1];
+/*         console.log('Nota Final: ', notaFinal);
+ */        setNota(notaFinal)
+        // Adicione a lógica necessária para lidar com a nota final, se necessário
+    } else {
+        console.log('Nota Final não encontrada.');
+    }
+};
 
   /* funçao para recuperar ufcd */
 
@@ -329,36 +357,55 @@ function Quiz() {
     name: user,
     modulo: ufcdName,
     correcao: results,
-    dia: dia,
+    //dia: dia,
+    curso:curso,
+    nota:nota,
   }
-
- /*  const handlGgeneratePdf = async () => {
-    setCarregando(true)
-    
-    try {
-      const response = await axios.post('/api/generate-pdf', FormeDate, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'MentorIA (correção).pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      // Capture and display error details
+  const handleGgeneratePdf = async () => {
+    if (certificadoStatus === 'Concedida') {
+      setCarregando(true);
+      try {
+        // Obter a data atual
+        const currentDate = new Date().toLocaleString('pt-BR', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+         //setDia(currentDate)
+         console.log(FormeDate);
+   
+        const response = await axios.post('/api/generate-pdf', { ...FormeDate, currentDate }, { responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'MentorIA (correção).pdf');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error);
+      } finally {
+        setCarregando(false);
+      }
+    } else {
+      console.log('Certificado não concedido. Ação bloqueada.');
+      return;
     }
+  
     // Após 5 segundos, mudamos o estado e redirecionamos
     const timer = setTimeout(() => {
       setCarregando(false);
-      router.push('/agradecimentos');
+      // router.push('/agradecimentos');
     }, 2000);
-
+  
     // Limpa o timer caso o componente seja desmontado antes dos 5 segundos
     return () => clearTimeout(timer);
-
-  }; */
-
-  const handleGgeneratePdf = async () => {
+  };
+  /* const handleGgeneratePdf = async () => {
+ 
     if (certificadoStatus === 'Concedida') {
       setCarregando(true);
       try {
@@ -382,13 +429,13 @@ function Quiz() {
      // Após 5 segundos, mudamos o estado e redirecionamos
      const timer = setTimeout(() => {
       setCarregando(false);
-      router.push('/agradecimentos');
-    }, 2000);
+       router.push('/agradecimentos');
+     }, 2000);
 
     // Limpa o timer caso o componente seja desmontado antes dos 5 segundos
     return () => clearTimeout(timer);
   };
-
+ */
   
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -468,7 +515,7 @@ function Quiz() {
     ))}
   </div>
   <div className='flex text-center mx-auto justify-center items-start'>
-  <p className='text-gray-400 text-xs texte center'>Vale a pena assegurar que este conteúdo foi criado por uma IA generativa.</p>
+  <p className='text-gray-400 text-xs texte center'>Vale a pena assegurar que este conteúdo esta a ser criado por uma IA generativa.</p>
   </div>
             </div>
           </div>
@@ -509,8 +556,8 @@ function Quiz() {
               onClick={() => {
                 fetchQuestionAndOptionsFromOpenAI();
                 setCurrentQuestionIndex(0);
-                setScore(0);
-                setQuestions([]);
+/*                 setScore(0);
+ */                setQuestions([]);
                 setShowQuestions(true);
                 setResults(null);
                 setUserAnswers([]);

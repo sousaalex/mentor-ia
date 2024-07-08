@@ -144,7 +144,7 @@ import { gerarJWT } from '../../pages/api/jwtUtils'; // Importe a função gerar
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { name, modulo, correcao, dia} = req.body;
+    const { name, curso, modulo, correcao, currentDate, nota} = req.body;
     
     try {
       // Gera o token JWT dinamicamente
@@ -161,9 +161,11 @@ export default async function handler(req, res) {
           template: {
             id: '1105609',
             data: {
-              Dia:dia,
+              Dia:currentDate,
               Name: name,
+              Nota: nota,
               Modulo: modulo,
+              Curso: curso,
               Correcao: correcao
             }
           },

@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { IoCheckmark } from "react-icons/io5";
-import TypingAnimation from './TypingAnimation'
 export default function Skeleton() {
     const [text, setText] = useState('Obtendo os dados...');
     const [fade, setFade] = useState(true);
@@ -18,7 +17,7 @@ export default function Skeleton() {
           });
           setFade(true);
         }, 500); // Tempo da animação de fade
-      }, 5000);
+      }, 9000);
   
       return () => clearInterval(interval);
     }, [texts]);

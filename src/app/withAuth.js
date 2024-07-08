@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from "react";
-/* import { SiRotaryinternational } from 'react-icons/si';
- */ import { getAuth, onAuthStateChanged } from "firebase/auth";
+import React from "react";
+ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import firebase from "firebase/compat/app";
 import firebaseConfig from "../firebaseConfig";
 import { GrCircleAlert } from "react-icons/gr";
-import { useRouter } from "next/router"; // Importe useRouter aqui
-import { Card } from "../components/ui/card";
-import { MdError } from "react-icons/md";
-import { ImSpinner2 } from "react-icons/im";
 import { Spin } from "antd";
 import Link from "next/link";
 
-/*  import { ImSpinner9 } from "react-icons/im";
- */
 
 // Inicialização do Firebase
 const app = firebase.initializeApp(firebaseConfig);
@@ -38,8 +31,8 @@ class WithAuth extends React.Component {
           isAuthenticated: !!user,
         });
         if (!user && router) {
-          router.replace("/login");
-        }
+           router.replace("/login");
+         }
       },
       (error) => {
         console.error("Erro ao verificar autenticação:", error);
