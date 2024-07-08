@@ -46,23 +46,23 @@ export default function LoginPage() {
   const handleCreateUserWithEmailVerification = async (e) => {
     setIsLoading(true);
     e.preventDefault();
-
+  
     if (!email || !createpassword) {
       camposemailesenha();
       setIsLoading(false);
       return;
     }
-
+  
     if (createpassword.length < 6) {
       pass();
       setIsLoading(false);
       return;
     }
-
+  
     try {
       // Verifica se o email existe usando a API
       const response = await fetch(`https://verefication-login-ms.vercel.app/userData/${email}`);
-
+  
       // Verifica se a resposta da requisição é bem-sucedida (status 200)
       if (response.ok) {
         const data = await response.json();
@@ -73,6 +73,16 @@ export default function LoginPage() {
             successo();
             localStorage.setItem('mailUser', email);
             router.push('/curso');
+  
+            // Atualiza o status de login do usuário para 'true'
+            const dbRef = firebase.database().ref('users');
+            const snapshot = await dbRef.orderByChild('email').equalTo(email.toLowerCase()).once('value');
+            if (snapshot.exists()) {
+              const userKey = Object.keys(snapshot.val())[0];
+              await dbRef.child(userKey).update({ login: 'true' });
+            } else {
+              console.error('Usuário não encontrado no banco de dados.');
+            }
           } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
               setError("Email já está em uso. Tente outro email.");
@@ -92,7 +102,6 @@ export default function LoginPage() {
       } else {
         throw new Error(`Erro ao verificar email: ${response.status} - ${response.statusText}`);
       }
-
     } catch (error) {
       console.error('Erro ao processar requisição:', error.message);
       setError(error.message);
@@ -201,13 +210,11 @@ export default function LoginPage() {
 
       setLoginStatus(foundUser.login);
       setVisible(false);
-
-
-      if (foundUser.login === 'false') {
+   /*    if (foundUser.login === 'false') {
         const userKey = Object.keys(snapshot.val())[0]; // Obtém a chave do usuário no banco de dados
         await dbRef.child(userKey).update({ login: 'true' });
       } else if (foundUser.login === 'true') {
-      }
+      } */
 
     } catch (error) {
       console.error("Erro ao verificar usuário no banco de dados:", error);
