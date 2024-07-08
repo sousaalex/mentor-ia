@@ -1,9 +1,11 @@
 'use client'
-import { useEffect, useState, useRef } from 'react';
+import {useEffect, useState, useRef} from 'react'
+import { marked } from 'marked';
 
 export default function TypingAnimation({ text }) {
   const [content, setContent] = useState('');
   const chatEndRef = useRef(null);
+
 
   useEffect(() => {
     let isMounted = true;
@@ -11,16 +13,9 @@ export default function TypingAnimation({ text }) {
     const animateText = async () => {
       for (let i = 0; i < text.length; i++) {
         if (!isMounted) return;
-        await new Promise((resolve) => setTimeout(resolve, 50)); // Ajuste o tempo para simular a digitação
-
+        await new Promise((resolve) => setTimeout(resolve, 2));
         if (isMounted) {
           setContent((prevContent) => prevContent + text.charAt(i));
-
-          // Verificar se a API de vibração está disponível e vibrar o dispositivo móvel
-          if ('vibrate' in navigator) {
-            navigator.vibrate(10); // Vibra por 10 milissegundos (ajuste conforme necessário)
-          }
-
           window.requestAnimationFrame(() => {
             chatEndRef.current?.scrollIntoView({ behavior: "instant" });
           });
@@ -37,11 +32,9 @@ export default function TypingAnimation({ text }) {
 
   return (
     <>
-      <p
-        className="rounded-xl text-base font-normal"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
+      <p className=" rounded-xl text-base  font-normal" dangerouslySetInnerHTML={{ __html: marked(content) }} />
       <div ref={chatEndRef} />
     </>
   );
-}
+};
+
